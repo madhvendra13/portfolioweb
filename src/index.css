@@ -84,9 +84,22 @@ body {
         }
     }
 
+    .nav-dark {
+        @apply text-black;
+    }
+
+    .nav-dark a {
+        @apply text-black border border-black;
+    }
+
+    .nav-dark a:hover {
+        @apply bg-black text-white;
+    }
+
     .noisy {
         @apply absolute inset-0 size-full bg-[url("/images/noise.png")];
     }
+    
 
     #hero {
         @apply relative z-10 min-h-dvh w-full border border-transparent;

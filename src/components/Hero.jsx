@@ -1,92 +1,72 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { SplitText } from "gsap/all";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
 const Hero = () => {
- const videoRef = useRef();
- 
- const isMobile = useMediaQuery({ maxWidth: 767 });
- 
- useGSAP(() => {
-	const heroSplit = new SplitText(".title", {
-	 type: "chars, words",
-	});
-	
-	const paragraphSplit = new SplitText(".subtitle", {
-	 type: "lines",
-	});
-	
-	// Apply text-gradient class once before animating
-	heroSplit.chars.forEach((char) => char.classList.add("text-gradient"));
-	
-	gsap.from(heroSplit.chars, {
-	 yPercent: 100,
-	 duration: 1.8,
-	 ease: "expo.out",
-	 stagger: 0.06,
-	});
-	
-	gsap.from(paragraphSplit.lines, {
-	 opacity: 0,
-	 yPercent: 100,
-	 duration: 1.8,
-	 ease: "expo.out",
-	 stagger: 0.06,
-	 delay: 1,
-	});
-	
-	gsap
-	.timeline({
-	 scrollTrigger: {
-		trigger: "#hero",
-		start: "top top",
-		end: "bottom top",
-		scrub: true,
-	 },
-	})
-	.to(".right-leaf", { y: 200 }, 0)
-	.to(".left-leaf", { y: -200 }, 0)
-	.to(".arrow", { y: 100 }, 0);
-	
-	const startValue = isMobile ? "100%" : "center 48%";
-	const endValue = isMobile ? "120% top" : "bottom top";
-	
-	let tl = gsap.timeline({
-	 scrollTrigger: {
-		trigger: "video",
-		start: startValue,
-		end: "+=500%",
-		scrub: true,
-		pin: true,
-	 },
-	});
-	
-	videoRef.current.onloadedmetadata = () => {
-	 tl.to(videoRef.current, {
-		currentTime: videoRef.current.duration,
-        
-	 });
-	};
- }, []);
- 
- return (
-	<>
-	 <section id="hero" className="noisy"></section>
-	 
-	 <div className="video absolute inset-0 ">
-		<video
-		 ref={videoRef}
-		 muted
-		 playsInline
-         preload="auto"
-		 src="/videos/output.mp4"
-        
-		/>
-	 </div>
-	</>
- );
+  const videoRef = useRef();
+  const spacerRef = useRef();
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const [videoDuration, setVideoDuration] = useState(0);
+
+
+// When the video file loads, the browser knows its duration
+// We store that in state so GSAP can calculate how much scroll distance we need to match the video’s playtime.
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.onloadedmetadata = () => {
+        setVideoDuration(videoRef.current.duration);
+      };
+    }
+  }, []);
+
+  useGSAP(() => {
+    if (!videoDuration) return;
+
+    const startValue = isMobile ? "100%" : "center 48%";
+
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: videoRef.current,
+        start: startValue,
+        end: `+=${videoDuration * 300}px`, // adjust scroll length proportional to video duration
+        scrub: true,
+        pin: true,
+      },
+    });
+
+    tl.to(videoRef.current, {
+      currentTime: videoRef.current.duration,
+      ease: "none",
+    });
+  }, [videoDuration]);
+
+
+
+
+
+
+  return (
+    <>
+      <section id="hero" className="relative flex items-center justify-center h-screen"></section>
+
+      <div className="video absolute inset-0 ">
+        <video
+          ref={videoRef}
+          muted
+          playsInline
+          preload="auto"
+          src="/videos/output.mp4"
+          className="w-full h-full object-cover absolute top-0 left-0"
+		
+        />
+      </div>
+
+      {/* Spacer div ensures enough scroll height so next page appears after video ends */}
+      <div ref={spacerRef} style={{ height: `${videoDuration * 300}px` }}></div>
+	  
+    </>
+  );
 };
 
 export default Hero;
