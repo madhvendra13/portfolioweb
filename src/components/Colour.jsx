@@ -13,7 +13,7 @@ const Colour = () => {
     gsap.from(split.chars, {
       opacity: 0,
       y: 50,
-      stagger: 0.05,
+      stagger: 0.1,
       duration: 1.2,
       ease: "power3.out",
       scrollTrigger: {
