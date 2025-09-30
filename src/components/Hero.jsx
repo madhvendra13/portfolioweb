@@ -172,7 +172,7 @@ const Hero = () => {
 
       <section
         id="hero"
-        className="relative flex flex-col gap-6 items-start justify-center h-screen bg-black overflow-hidden px-5 mt-40"
+        className="relative left-12 flex flex-col gap-6 items-start justify-center h-screen bg-black overflow-hidden px-5 mt-40"
       >
         <h1
           ref={textRef}
