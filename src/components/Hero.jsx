@@ -110,12 +110,10 @@ const Hero = () => {
 
   return (
     <>
-      <section id="hero" className="relative flex flex-col gap-6 items-start justify-center h-screen bg-black overflow-hidden px-12">
-        <h1 ref={textRef} className="text-white text-7xl md:text-8xl font-bold z-20 max-w-[70%] leading-tight">HEY! Welcome</h1>
+      <section id="hero" className="relative flex flex-col gap-6 items-start justify-center h-screen bg-black overflow-hidden px-5 mt-40 ">
+        <h1 ref={textRef} className="text-white text-7xl md:text-8xl  z-20 max-w-[70%] leading-tight">HEY! Welcome</h1>
         <p ref={extraTextRef} className="animate-me text-white text-lg md:text-2xl font-light max-w-[60%] z-20">
           This is a demo of GSAP SplitText animation.  
-          Your text comes alive word by word.  
-          Lets make things smooth and fun.
         </p>
       </section>
 
