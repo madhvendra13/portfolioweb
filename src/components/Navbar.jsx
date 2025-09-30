@@ -62,10 +62,10 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 transition-colors duration-100">
-  <div className="flex justify-between items-center px-6 py-4">
+  <div className="flex justify-between items-center px-10 py-4">
     {/* Logo */}
     <a href="#home" className="flex items-center gap-2">
-      <img src="/images/logo.png" alt="logo" className="w-16 h-16" />
+      <img src="/images/logo.png" alt="logo" className="w-10 h-10" />
       <p className="text-lg font-bold text-white">A D S</p>
     </a>
 

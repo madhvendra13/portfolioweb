@@ -2,7 +2,7 @@
 import React, { useRef, useEffect } from "react";
 import p5 from "p5";
 
-const GlowyStar = ({ widthPercent = 60, targetX = 150, targetY = 50 }) => {
+const GlowyStar = ({ widthPercent = 60, targetX = 180, targetY = 60 }) => {
   const containerRef = useRef();
 
   useEffect(() => {
@@ -51,14 +51,14 @@ const GlowyStar = ({ widthPercent = 60, targetX = 150, targetY = 50 }) => {
         );
 
         // scrollFactor goes from 1.3 → 0
-        const scrollFactor = p.lerp(1.8, 0, p.constrain(scrollProgress * 2.8, 0, 1));
+        const scrollFactor = p.lerp(1.8, 0, p.constrain(scrollProgress * 2.4, 0, 1));
 
         // Move toward target as scrollFactor decreases
         const xOffset = p.lerp(0, -cx + targetX, 1 - scrollFactor);
         const yOffset = p.lerp(0, -cy + targetY, 1 - scrollFactor);
 
         // Fade out based on scrollFactor
-        const alphaFactor = p.map(scrollFactor, 0.02, 0, 255, 0, true);
+        const alphaFactor = p.map(scrollFactor, 0.01, 0, 255, 0, true);
 
         p.push();
         p.translate(cx + xOffset, cy + yOffset);
@@ -83,39 +83,15 @@ const GlowyStar = ({ widthPercent = 60, targetX = 150, targetY = 50 }) => {
           // Collapse animation (fades out with scroll)
           const t = p.frameCount * 0.1;
 
-          const coreSize = p.map(scrollFactor, 0.05, 0, 40, 40, true);
-
-          // Concentric glow rings
-          for (let i = 0; i < 5; i++) {
-            const glow = coreSize + i * 10;
-            const alpha = alphaFactor / (i + 1);
-            p.noFill();
-            p.stroke(255, alpha);
-            p.ellipse(0, 0, glow, glow);
-          }
+          const coreSize = p.map(scrollFactor, 0.05, 0, 20, 30, true);
 
           // Core bright point
           p.noStroke();
           p.fill(255, alphaFactor);
           p.ellipse(0, 0, coreSize, coreSize);
 
-          // Orbit sparks
-          const numSparks = 6;
-          for (let i = 0; i < numSparks; i++) {
-            const angle = (360 / numSparks) * i + t * 30;
-            const r = coreSize * 0.6 + p.sin(t + i) * 5;
-            const x = p.cos(angle) * r;
-            const y = p.sin(angle) * r;
-            p.fill(255, 180, 0, alphaFactor * 0.7);
-            p.ellipse(x, y, 4, 4);
-          }
-
-          // Radiating expanding rings
-          if (p.frameCount % 20 === 0) {
-            expanding.push({ r: 0, alpha: alphaFactor });
-          }
-
-          for (let i = expanding.length - 1; i >= 0; i--) {
+          
+           for (let i = expanding.length - 1; i >= 0; i--) {
             const ring = expanding[i];
             p.noFill();
             p.stroke(255, ring.alpha);
