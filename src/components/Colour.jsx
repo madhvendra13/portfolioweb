@@ -38,8 +38,6 @@ const Colour = () => {
         Madhvendra
       </h1>
 
-      {/* Show curve visualizer centered */}
-      
     </section>
   );
 };
