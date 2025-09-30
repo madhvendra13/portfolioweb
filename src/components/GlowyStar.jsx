@@ -2,7 +2,7 @@
 import React, { useRef, useEffect } from "react";
 import p5 from "p5";
 
-const GlowyStar = ({ widthPercent = 60, targetX = 180, targetY = 60 }) => {
+const GlowyStar = ({ widthPercent = 60, targetX = 150, targetY = 400 }) => {
   const containerRef = useRef();
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const GlowyStar = ({ widthPercent = 60, targetX = 180, targetY = 60 }) => {
         );
 
         // scrollFactor goes from 1.3 → 0
-        const scrollFactor = p.lerp(1.8, 0, p.constrain(scrollProgress * 2.4, 0, 1));
+        const scrollFactor = p.lerp(1.8, 0, p.constrain(scrollProgress * 6, 0, 1));
 
         // Move toward target as scrollFactor decreases
         const xOffset = p.lerp(0, -cx + targetX, 1 - scrollFactor);

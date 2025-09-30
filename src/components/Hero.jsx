@@ -99,9 +99,9 @@ const Hero = () => {
 
     gsap.to(starRef.current, {
       scale: 1.05,
-      opacity: 0.8,
-      boxShadow: "0px 0px 50px white",
-      duration: 2,
+      opacity: 0.7,
+      boxShadow: "0px 50px 050px white",
+      duration: 1.8,
       repeat: -1,
       yoyo: true,
       ease: "sine.inOut",
