@@ -2,22 +2,23 @@
 import React, { useRef, useEffect } from "react";
 import p5 from "p5";
 
-const GlowyStar = ({ widthPercent = 60, targetX = 150, targetY = 400 }) => {
+const GlowyStar = ({ widthPercent = 50 }) => {
   const containerRef = useRef();
 
   useEffect(() => {
     const sketch = (p) => {
       let baseRadius;
-      let expanding = [];
+      let rotation = 0;
+      let lastScroll = 0;
+      let rotationSpeed = 0.1; // default slow clockwise
 
       p.setup = () => {
         const container = containerRef.current;
         p.createCanvas(container.offsetWidth, container.offsetHeight);
         p.angleMode(p.DEGREES);
-        baseRadius = Math.min(p.width, p.height) * 0.18;
+        baseRadius = Math.min(p.width, p.height) * 0.17;
       };
 
-      // ✅ Proper resize handling
       p.windowResized = () => {
         if (containerRef.current) {
           const container = containerRef.current;
@@ -26,7 +27,7 @@ const GlowyStar = ({ widthPercent = 60, targetX = 150, targetY = 400 }) => {
         }
       };
 
-      // Recursive fractal drawer
+      // Recursive fractal drawer (balanced)
       function drawFractal(x, y, length, angle, depth) {
         if (depth === 0 || length < 1) return;
 
@@ -34,8 +35,8 @@ const GlowyStar = ({ widthPercent = 60, targetX = 150, targetY = 400 }) => {
         const y2 = y + p.sin(angle) * length;
         p.line(x, y, x2, y2);
 
-        const newLength = length * 0.2;
-        const branchAngle = 30;
+        const newLength = length * 0.15; // faster shrink
+        const branchAngle = 45;
 
         drawFractal(x2, y2, newLength, angle - branchAngle, depth - 1);
         drawFractal(x2, y2, newLength, angle + branchAngle, depth - 1);
@@ -45,66 +46,37 @@ const GlowyStar = ({ widthPercent = 60, targetX = 150, targetY = 400 }) => {
         p.clear();
         const cx = p.width / 2;
         const cy = p.height / 2;
-        const rot = p.frameCount * 0.05;
 
-        // Scroll progress (0 → 1)
-        const scrollProgress = p.constrain(
-          window.scrollY / (document.body.scrollHeight - window.innerHeight),
-          0,
-          1
-        );
+        // Scroll delta
+        const scrollNow = window.scrollY;
+        const scrollDelta = scrollNow - lastScroll;
+        lastScroll = scrollNow;
 
-        // Collapse factor
-        const scrollFactor = p.lerp(1.8, 0, p.constrain(scrollProgress * 6, 0, 1));
+        // Adjust spin speed
+        rotationSpeed += scrollDelta * 0.01;
+        rotationSpeed *= 0.85; // friction
+        rotationSpeed = p.lerp(rotationSpeed, 0.1, 0.02); // settle back
 
-        // Shift toward target point as collapsing
-        const xOffset = p.lerp(0, -cx + targetX, 1 - scrollFactor);
-        const yOffset = p.lerp(0, -cy + targetY, 1 - scrollFactor);
-
-        // Fade alpha
-        const alphaFactor = p.map(scrollFactor, 0.01, 0, 255, 0, true);
+        // Update rotation
+        rotation += rotationSpeed;
 
         p.push();
-        p.translate(cx + xOffset, cy + yOffset);
+        p.translate(cx, cy);
+        p.rotate(rotation);
         p.drawingContext.shadowColor = "white";
         p.drawingContext.shadowBlur = 25;
 
-        if (scrollFactor > 0.05) {
-          // 🌟 Fractal star (normal state)
-          const layers = 5;
-          for (let layer = layers; layer > 0; layer--) {
-            const radius = baseRadius * scrollFactor * (1 + layer * 0.12);
-            const points = 8 + layer;
-            const step = 360 / points;
+        // 🌟 Balanced fractal star
+        const layers = 6; // fewer layers = less clutter
+        for (let layer = layers; layer > 0; layer--) {
+          const radius = baseRadius * (1 + layer * 0.25);
+          const points = 5 + layer; // fewer points per ring
+          const step = 360 / points;
 
-            p.stroke(255, p.map(layer, layers, 1, 50, 200));
+          p.stroke(255, p.map(layer, layers, 1, 100, 200));
 
-            for (let a = 0; a < 360; a += step) {
-              drawFractal(0, 0, radius, a + rot * layer * 0.3, 3);
-            }
-          }
-        } else if (alphaFactor > 0) {
-          // 🌌 Collapse phase (glowy core + rings)
-          const coreSize = p.map(scrollFactor, 0.05, 0, 20, 30, true);
-
-          // Bright glowing core
-          p.noStroke();
-          p.fill(255, alphaFactor);
-          p.ellipse(0, 0, coreSize, coreSize);
-
-          // Expanding ripple rings
-          if (p.frameCount % 10 === 0) {
-            expanding.push({ r: coreSize, alpha: 180 });
-          }
-
-          for (let i = expanding.length - 1; i >= 0; i--) {
-            const ring = expanding[i];
-            p.noFill();
-            p.stroke(255, ring.alpha);
-            p.ellipse(0, 0, ring.r, ring.r);
-            ring.r += 3;
-            ring.alpha -= 5;
-            if (ring.alpha <= 0) expanding.splice(i, 1);
+          for (let a = 0; a < 360; a += step) {
+            drawFractal(0, 0, radius, a, 20); // depth = 2
           }
         }
 
@@ -113,8 +85,8 @@ const GlowyStar = ({ widthPercent = 60, targetX = 150, targetY = 400 }) => {
     };
 
     const myP5 = new p5(sketch, containerRef.current);
-    return () => myP5.remove(); // ✅ cleanup
-  }, [targetX, targetY, widthPercent]);
+    return () => myP5.remove();
+  }, [widthPercent]);
 
   return (
     <div

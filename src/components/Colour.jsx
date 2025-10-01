@@ -29,11 +29,11 @@ const Colour = () => {
   return (
     <section
       id="colour"
-      className="relative flex flex-col items-center justify-center h-screen w-full bg-white -mt-px"
+      className="relative flex flex-col items-center justify-center h-screen w-full bg-white "
     >
       <h1
         ref={nameRef}
-        className="text-6xl md:text-8xl font-bold text-red-600 mb-8"
+        className="text-6xl md:text-8xl font-bold text-red-600 "
       >
         Madhvendra
       </h1>

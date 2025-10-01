@@ -161,14 +161,14 @@ const Hero = () => {
       </section>
 
       {/* GlowyStar */}
-      <div ref={starRef} className="fixed top-0 right-3 h-full w-full z-10 pointer-events-none">
-        <GlowyStar />
+      <div ref={starRef} className="fixed top-10 right-0 z-10 pointer-events-none">
+        <GlowyStar/>
       </div>
 
       {/* Hero image */}
       <div
         ref={imageRef}
-        className="fixed top-0 h-screen w-screen z-20 md:block opacity-35"
+        className="fixed top-0 h-screen w-screen z-20 md:block opacity-20"
         style={{
           maskImage: `radial-gradient(circle 100px at ${trail.x}px ${trail.y}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 120%)`,
           WebkitMaskImage: `radial-gradient(circle 100px at ${trail.x}px ${trail.y}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 120%)`,
