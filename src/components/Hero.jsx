@@ -11,11 +11,11 @@ const Hero = () => {
   const spacerRef = useRef();
   const textRef = useRef();
   const extraTextRef = useRef();
+  const paraRef = useRef([]);
   const imageRef = useRef();
   const starRef = useRef();
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const [videoDuration, setVideoDuration] = useState(0);
-
 
   // Time state
   const [time, setTime] = useState("");
@@ -23,15 +23,19 @@ const Hero = () => {
   // IST Time updater
   useEffect(() => {
     const updateTime = () => {
-      const options = { timeZone: "Asia/Kolkata", hour12: false, hour: "2-digit", minute: "2-digit" };
+      const options = {
+        timeZone: "Asia/Kolkata",
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+      };
       const now = new Intl.DateTimeFormat("en-GB", options).format(new Date());
       setTime(now);
     };
     updateTime();
-    const interval = setInterval(updateTime, 1000 * 30); // refresh every 30s
+    const interval = setInterval(updateTime, 1000 * 30);
     return () => clearInterval(interval);
   }, []);
-
 
   // Mouse spotlight state
   const [spot, setSpot] = useState({ x: 0, y: 0 });
@@ -72,7 +76,7 @@ const Hero = () => {
   useGSAP(() => {
     gsap.registerPlugin(SplitText);
 
-    // ✅ Wait for fonts before running SplitText
+    // SplitText animations
     document.fonts.ready.then(() => {
       if (textRef.current) {
         const split = new SplitText(textRef.current, { type: "chars" });
@@ -157,10 +161,43 @@ const Hero = () => {
     });
   }, []);
 
+  // Genie effect for paragraphs (bottom-right to position on scroll)
+  useEffect(() => {
+    if (!paraRef.current.length) return;
+
+    paraRef.current.forEach((para, index) => {
+      if (!para) return;
+
+      gsap.fromTo(
+        para,
+        {
+          x: 300,   // start offscreen right
+          y: 300,   // start offscreen bottom
+          scale: 0.5,
+          opacity: 0,
+        },
+        {
+          x: 0,
+          y: 0,
+          scale: 1,
+          opacity: 1,
+          duration: 1.4,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: para,
+            start: "top 80",
+            end: "bottom 60%",
+            toggleActions: "play none none reverse",
+          },
+          delay: 0.3 * index,
+        }
+      );
+    });
+  }, []);
+
   return (
     <>
-
-    {/* 🔹 Top Info Bar */}
+      {/* 🔹 Top Info Bar */}
       <div className="fixed top-16 left-70 -translate-x-1/2 flex items-center gap-6 text-white/100 text-sm tracking-wide z-30">
         <span className="font-medium">My Studio</span>
         <span>·</span>
@@ -169,14 +206,13 @@ const Hero = () => {
         <span className="opacity-70">IST {time}</span>
       </div>
 
-
       <section
         id="hero"
-        className="relative left-12 flex flex-col gap-6 items-start justify-center h-screen bg-black overflow-hidden px-5 mt-40"
+        className="relative left-12 flex flex-col gap-6 items-start justify-center h-screen bg-black overflow-visible px-5 mt-40"
       >
         <h1
           ref={textRef}
-          className="text-white text-7xl md:text-8xl z-20 max-w-[70%] leading-tight"
+          className="text-white text-7xl md:text-8xl z-20 max-w-[70%] leading-tight pt-10"
         >
           HEY! Welcome
         </h1>
@@ -186,9 +222,24 @@ const Hero = () => {
         >
           This is a demo of GSAP SplitText animation.
         </p>
+
+        {/* Paragraphs with genie effect */}
+        <p
+          ref={(el) => (paraRef.current[0] = el)}
+          className="animate-me text-white text-lg md:text-5xl font-light max-w-[60%] z-20 mt-10"
+        >
+          Lué Studio® is an end-to-end, powerhouse in digital design, development and direction.
+        </p>
+
+        <p
+          ref={(el) => (paraRef.current[1] = el)}
+          className="animate-me text-white text-lg md:text-2xl font-light max-w-[60%] z-20 mt-6"
+        >
+          Our work encompasses brand and identity, websites and user interfaces, motion and experience, strategy and positioning — all anchored by powerful storytelling.
+        </p>
       </section>
 
-      {/* GlowyStar with pulse + glow */}
+      {/* GlowyStar */}
       <div
         ref={starRef}
         className="fixed top-0 right-3 h-full w-full z-10 pointer-events-none"
@@ -203,8 +254,7 @@ const Hero = () => {
         style={{
           maskImage: `radial-gradient(circle 100px at ${trail.x}px ${trail.y}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 120%)`,
           WebkitMaskImage: `radial-gradient(circle 100px at ${trail.x}px ${trail.y}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 120%)`,
-          transition:
-            "mask-position 0.1s, -webkit-mask-position 0.1s",
+          transition: "mask-position 0.1s, -webkit-mask-position 0.1s",
         }}
       >
         <img
@@ -227,10 +277,7 @@ const Hero = () => {
       </div>
 
       {/* Spacer for scroll */}
-      <div
-        ref={spacerRef}
-        style={{ height: `${videoDuration * 300}px` }}
-      />
+      <div ref={spacerRef} style={{ height: `${videoDuration * 300}px` }} />
     </>
   );
 };
