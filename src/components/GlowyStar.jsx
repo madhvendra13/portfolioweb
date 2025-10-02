@@ -2,7 +2,7 @@
 import React, { useRef, useEffect } from "react";
 import p5 from "p5";
 
-const GlowyStar = ({ widthPercent = 50 }) => {
+const GlowyStar = ({ widthPercent = 50, fadeStart = 1700, fadeEnd = 2000 }) => {
   const containerRef = useRef();
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const GlowyStar = ({ widthPercent = 50 }) => {
         }
       };
 
-      // Recursive fractal drawer (balanced)
+      // Recursive fractal drawer
       function drawFractal(x, y, length, angle, depth) {
         if (depth === 0 || length < 1) return;
 
@@ -35,7 +35,7 @@ const GlowyStar = ({ widthPercent = 50 }) => {
         const y2 = y + p.sin(angle) * length;
         p.line(x, y, x2, y2);
 
-        const newLength = length * 0.15; // faster shrink
+        const newLength = length * 0.15;
         const branchAngle = 45;
 
         drawFractal(x2, y2, newLength, angle - branchAngle, depth - 1);
@@ -57,26 +57,34 @@ const GlowyStar = ({ widthPercent = 50 }) => {
         rotationSpeed *= 0.85; // friction
         rotationSpeed = p.lerp(rotationSpeed, 0.1, 0.02); // settle back
 
-        // Update rotation
         rotation += rotationSpeed;
+
+        // Fade factor based on scroll
+        let fadeFactor = 1;
+        if (scrollNow >= fadeStart) {
+          fadeFactor = p.constrain(1 - (scrollNow - fadeStart) / (fadeEnd - fadeStart), 0, 1);
+        }
 
         p.push();
         p.translate(cx, cy);
         p.rotate(rotation);
-        p.drawingContext.shadowColor = "white";
-        p.drawingContext.shadowBlur = 25;
 
-        // 🌟 Balanced fractal star
-        const layers = 6; // fewer layers = less clutter
+        const layers = 7;
         for (let layer = layers; layer > 0; layer--) {
-          const radius = baseRadius * (1 + layer * 0.25);
-          const points = 5 + layer; // fewer points per ring
+          const radius = baseRadius * (1 + layer * 0.16);
+          const points = 5 + layer;
           const step = 360 / points;
 
-          p.stroke(255, p.map(layer, layers, 1, 100, 200));
+          // Layered glow: inner layers glow stronger
+          const glow = p.map(layer, 1, layers, 40, 5) * fadeFactor;
+          p.drawingContext.shadowBlur = glow;
+          p.drawingContext.shadowColor = `rgba(255,255,255,${fadeFactor})`;
+
+          // Stroke opacity adjusted per layer
+          p.stroke(255, 255 * fadeFactor);
 
           for (let a = 0; a < 360; a += step) {
-            drawFractal(0, 0, radius, a, 20); // depth = 2
+            drawFractal(0, 0, radius, a, 20);
           }
         }
 
@@ -86,7 +94,7 @@ const GlowyStar = ({ widthPercent = 50 }) => {
 
     const myP5 = new p5(sketch, containerRef.current);
     return () => myP5.remove();
-  }, [widthPercent]);
+  }, [widthPercent, fadeStart, fadeEnd]);
 
   return (
     <div
