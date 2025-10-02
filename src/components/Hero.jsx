@@ -143,19 +143,20 @@ const Hero = () => {
       </div>
 
       {/* Hero Section */}
-      <section id="hero" className="relative left-12 flex flex-col gap-6 items-start justify-start h-screen bg-black overflow-visible px-5 mt-40">
-        <h1 ref={textRef} className="text-white text-7xl md:text-8xl z-20 max-w-[70%] leading-tight">
+      <section id="hero" className="relative left-12 flex flex-col gap-6 items-start justify-start h-screen bg-black overflow-visible px-5 mt-40 max-w-[50%]">
+
+        <h1 ref={textRef} className="text-white text-5xl md:text-8xl z-20 max-w-[100%] leading-tight mt-95">
           HEY! Welcome
         </h1>
-        <p ref={extraTextRef} className="animate-me text-white text-lg md:text-2xl font-light max-w-[60%] z-20">
+        <p ref={extraTextRef} className="animate-me text-lg md:text-2xl font-light leading-tight z-20">
           This is a demo of GSAP SplitText animation.
         </p>
 
-        <p ref={(el) => (paraRefs.current[0] = el)} className="animate-me text-white text-lg md:text-5xl font-light max-w-[60%] z-20 pt-80">
+        <p ref={(el) => (paraRefs.current[0] = el)} className="animate-me text-white text-lg md:text-5xl font-light z-20 pt-80">
           Lué Studio® is an end-to-end, powerhouse in digital design, development and direction.
         </p>
 
-        <p ref={(el) => (paraRefs.current[1] = el)} className="animate-me text-white text-lg md:text-2xl font-light max-w-[60%] z-20 mt-100">
+        <p ref={(el) => (paraRefs.current[1] = el)} className="animate-me text-white text-lg md:text-2xl font-light z-20 pt-80 ">
           Our work encompasses brand and identity, websites and user interfaces, motion and experience, strategy and positioning — all anchored by powerful storytelling.
         </p>
       </section>
